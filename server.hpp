@@ -1,4 +1,5 @@
 #include <memory>
+#include <queue>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/socket.h>
@@ -11,7 +12,7 @@
 #include <string>
 #include <fcntl.h>
 #include "file/file.h"
-#define PORT 8080
+#define PORT 40001
 
 class TCPServer
 {
@@ -21,6 +22,7 @@ class TCPServer
     std::vector<int> connections;
     struct sockaddr_in address;
     int opt;
+    std::queue<int> wait_queue;
     std::unordered_map<std::string, file> file_map;
 
 private:
@@ -90,6 +92,7 @@ public:
                                   (socklen_t *)&addrlen);
         if (new_socket > 0)
         {
+	    std::cout << "accepted connection" << std::endl;
             connections.push_back(new_socket);
             active_connections++;
             total_connections++;
@@ -98,9 +101,24 @@ public:
 
     void *read(int connection)
     {
+	std::cout << "reading" << std::endl;
         void *buf = new char[1024];
         int bytesread = ::read(connections[connection], buf, 1024);
-        return buf;
+	for (int i = 0; i < bytesread; i++) {
+		std::cout << ((char *) buf)[i] << std::endl;
+	}
+	bool enqueue;
+	if (enqueue) {
+		wait_queue.push(connection);
+		int wait = 1;
+		send(&wait, sizeof(wait), connection);
+	} else {
+		int curr_process = wait_queue.front();
+		wait_queue.pop();
+		int wake = 0;
+		send(&wake, sizeof(wake), curr_process);
+	}
+	return buf;
     }
 
     void send(void *payload, size_t sz, int connection)
