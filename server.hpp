@@ -104,10 +104,12 @@ public:
 	std::cout << "reading" << std::endl;
         void *buf = new char[1024];
         int bytesread = ::read(connections[connection], buf, 1024);
+	std::cout << bytesread << std::endl;
+	std::cout << "after" << std::endl;
 	for (int i = 0; i < bytesread; i++) {
 		std::cout << ((char *) buf)[i] << std::endl;
 	}
-	bool enqueue;
+	bool enqueue = true;
 	if (enqueue) {
 		wait_queue.push(connection);
 		int wait = 1;
@@ -137,6 +139,6 @@ public:
     }
     
     void processRequests(){
-
+	readAll();
     }
 };
