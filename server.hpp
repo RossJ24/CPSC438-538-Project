@@ -11,7 +11,8 @@
 #include <string>
 #include <fcntl.h>
 #include "file/file.h"
-#define PORT 8080
+#include "types.h"
+#define PORT 40001
 
 class TCPServer
 {
@@ -90,6 +91,7 @@ public:
                                   (socklen_t *)&addrlen);
         if (new_socket > 0)
         {
+            std::cout << "We here" << std::endl;
             connections.push_back(new_socket);
             active_connections++;
             total_connections++;
@@ -98,7 +100,7 @@ public:
 
     void *read(int connection)
     {
-        void *buf = new char[1024];
+        void *buf = new char[5120];
         int bytesread = ::read(connections[connection], buf, 1024);
         return buf;
     }
@@ -107,7 +109,10 @@ public:
     {
         ::send(connections[connection], payload, sz, 0);
     }
-
+    /**
+     * Reads from all sockets and returns a vector of void pointers to the data.
+     * 
+     */
     std::vector<void *> readAll()
     {
         std::vector<void *> vec = std::vector<void *>(0);
@@ -118,7 +123,16 @@ public:
         return vec;
     }
     
+    /**
+     * Processes all requests based on the values in the header.
+     * 
+     */
     void processRequests(){
-
+        std::vector<void*> data_vec = readAll();
+        for(int i = 0; i < data_vec.size(); ++i){
+            void* data = data_vec[i];
+            mem_header* header = (mem_header*) data;
+            std::cout << header->opcode << std::endl;
+        }
     }
 };
