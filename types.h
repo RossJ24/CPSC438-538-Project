@@ -1,4 +1,12 @@
+#ifndef __TYPES_H__
+#define __TYPES_H__
 #include <linux/types.h>
+#include <unordered_map>
+
+#define MT_OPEN 1
+#define MT_CLOSE 2
+#define MT_READ 3
+#define MT_WRITE 4
 
 typedef struct {
 	u_int32_t opcode;         // type of payload / message
@@ -45,3 +53,15 @@ typedef struct {
 typedef struct {
     int closed;
 } close_file_res_t;
+
+typedef struct
+{
+    // How many opens the file currently has
+    int usage;
+    // File descriptor of the file
+    int fd;
+    // Maps thread to seek_position in file
+    std::unordered_map<int, int> seek_positions;
+} file;
+
+#endif
