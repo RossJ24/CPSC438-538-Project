@@ -3,6 +3,7 @@
 std::shared_ptr<open_file_res_t> open_handler(TCPServer* server, std::shared_ptr<open_file_req_t> req){
     std::string path = std::string(req->path);
     int fd;
+    std::cout << "Server: " << req->header.sender_id << " opening file: " << path << std::endl;
     if(server->file_exists(path)){
         fd = server->open_existing_file(path, req->header.sender_id);
     } else {
@@ -11,12 +12,13 @@ std::shared_ptr<open_file_res_t> open_handler(TCPServer* server, std::shared_ptr
     }
     std::shared_ptr<open_file_res_t> res = std::make_shared<open_file_res_t>();
     res->file_descriptor = fd;
+    std::cout << "granted fd: " << fd << std::endl;
     return std::static_pointer_cast<open_file_res_t>(res);
 }
 
 std::shared_ptr<read_file_res_t> read_handler(TCPServer* server, std::shared_ptr<read_file_req_t> req){
     std::shared_ptr<read_file_res_t> res = std::make_shared<read_file_res_t>();
-    std::cout << "Server: " << req->header.sender_id << " requesting fd: " << req->fd << std::endl;
+    std::cout << "Server: " << req->header.sender_id << " reading fd: " << req->fd << std::endl;
     if(!server->file_open(req->fd)){
         res->bytes_read = -1;
     }
