@@ -87,10 +87,10 @@ void TCPServer::acceptConnection()
 
 std::shared_ptr<void> TCPServer::read(int connection)
 {
-    std::shared_ptr<void> buf(new char[5120]);
+    std::shared_ptr<char[]> buf(new char[5120]);
     memset(buf.get(), 0, 5120);
     int bytesread = ::read(connections[connection], buf.get(), 5120);
-    return buf;
+    return std::static_pointer_cast<void>(buf);
 }
 
 void TCPServer::send(std::shared_ptr<void> payload, size_t sz, int connection)
