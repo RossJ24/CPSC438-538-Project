@@ -179,7 +179,7 @@ int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_r
     off_t seek_pos = lseek(fd, f->seek_positions[sender_id], SEEK_SET);
     printf("NUM BYTES: %d\n", num_bytes);
     printf("SEEK POS %d\n", f->seek_positions[sender_id]);
-    if (seek_pos == -1)
+    if (seek_pos == (off_t)-1)
     {
         printf("Seek Err; FD: %d, ERRNO: %d\n", fd, errno);
         return -1;
