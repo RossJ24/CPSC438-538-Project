@@ -126,15 +126,15 @@ void TCPServer::processRequests()
         uint32_t operation = header->opcode;
         if (operation == MT_OPEN) {
             std::shared_ptr<open_file_req_t> open_req = std::static_pointer_cast<open_file_req_t>(data);
-            std::shared_ptr<open_file_res_t> open_res = open_handler(this, open_req.get());
+            std::shared_ptr<open_file_res_t> open_res = open_handler(this, open_req);
             send(open_res, sizeof(*open_res), i);
         } else if (operation == MT_READ) {
             std::shared_ptr<read_file_req_t> read_req = std::static_pointer_cast<read_file_req_t>(data);
-            std::shared_ptr<read_file_res_t> read_res = read_handler(this, read_req.get());
+            std::shared_ptr<read_file_res_t> read_res = read_handler(this, read_req);
             send(read_res, sizeof(*read_res), i);
         } else if (operation == MT_CLOSE) {
             std::shared_ptr<close_file_req_t> close_req = std::static_pointer_cast<close_file_req_t>(data);
-            std::shared_ptr<close_file_res_t> close_res = close_handler(this, close_req.get());
+            std::shared_ptr<close_file_res_t> close_res = close_handler(this, close_req);
             send(close_res, sizeof(*close_res), i);
         }
     }

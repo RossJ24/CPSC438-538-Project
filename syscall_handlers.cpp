@@ -1,6 +1,6 @@
 #include "syscall_handlers.hpp"
 
-std::shared_ptr<open_file_res_t> open_handler(TCPServer* server, open_file_req_t* req){
+std::shared_ptr<open_file_res_t> open_handler(TCPServer* server, std::shared_ptr<open_file_req_t> req){
     std::string path = std::string(req->path);
     int fd;
     if(server->file_exists(path)){
@@ -14,7 +14,7 @@ std::shared_ptr<open_file_res_t> open_handler(TCPServer* server, open_file_req_t
     return res;
 }
 
-std::shared_ptr<read_file_res_t> read_handler(TCPServer* server, read_file_req_t* req){
+std::shared_ptr<read_file_res_t> read_handler(TCPServer* server, std::shared_ptr<read_file_req_t> req){
     std::shared_ptr<read_file_res_t> res = std::make_shared<read_file_res_t>();
     std::cout << "Server: " << req->header.sender_id << "requesting fd: " << req->fd << std::endl;
     if(!server->file_open(req->fd)){
@@ -24,7 +24,7 @@ std::shared_ptr<read_file_res_t> read_handler(TCPServer* server, read_file_req_t
     return res;
 }
 
-std::shared_ptr<close_file_res_t> close_handler(TCPServer* server, close_file_req_t* req){
+std::shared_ptr<close_file_res_t> close_handler(TCPServer* server, std::shared_ptr<close_file_req_t> req){
     std::shared_ptr<close_file_res_t> res = std::make_shared<close_file_res_t>();
     std::cout << "Server: " << req->header.sender_id << "closing fd: " << req->fd << std::endl;
     //Add logic to check;
