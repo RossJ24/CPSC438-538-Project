@@ -208,6 +208,8 @@ int TCPServer::write_file(int fd, uint32_t sender_id, char* buf, int num_bytes){
     }
     ssize_t bytes_written = ::write(fd, buf, num_bytes);
     printf("BUF CONTENT: %s\n", buf);
+    printf("NUM BYTES: %d\n", num_bytes);
+    printf("SEEK POS %d", f->seek_positions[sender_id]);
     if (bytes_written == -1)
     {
         std::cout << "YO!2" <<std::endl;
