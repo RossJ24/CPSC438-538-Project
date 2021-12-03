@@ -23,7 +23,6 @@ class TCPServer
     struct sockaddr_in address;
     int opt;
     std::queue<int> wait_queue;
-    std::unordered_map<int, int> queue_map;
     std::unordered_map<std::string, file> file_map;
 
 private:
@@ -102,28 +101,26 @@ public:
 
     void *read(int connection)
     {
-	std::cout << "reading" << std::endl;
         void *buf = new char[1024];
         int bytesread = ::read(connections[connection], buf, 1024);
-	std::cout << bytesread << std::endl;
 	int * opCodeLocation = (int *) (buf);
-	std::cout << "operation is " << std::endl;
-	std::cout << *opCodeLocation << std::endl;
 	int enqueue = *opCodeLocation;
-	if (enqueue && queue_map.find(connection) != queue_map.end()) {
+	//std::cout << "Front of queue " << wait_queue.front() << std::endl;
+	if (enqueue == 1) {
+		std::cout << "Added connection " << connection << " to queue" << std::endl;
 		wait_queue.push(connection);
-		queue_map[connection] = 1;
 	}
-	
+	std::cout << "New Front of queue " << wait_queue.front() << std::endl;
 	if (enqueue) {
 		int wait = 1;
 		send(&wait, sizeof(wait), connection);
+		std::cout << "Connection " << connection << " waiting" << std::endl;
 	} else {
 		int woke_process = wait_queue.front();
 		wait_queue.pop();
-		queue_map.erase(woke_process);
 		int wake = 0;
 		send(&wake, sizeof(wake), woke_process);
+		std::cout << "Connection " << connection << " woke " << woke_process << std::endl;
 	}
 	return buf;
     }
