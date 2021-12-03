@@ -37,6 +37,7 @@ typedef struct {
 
 typedef struct {
     mem_header header;
+    int fd;
     char write_buf[4096];
     size_t num_chars;
 } write_file_req_t;

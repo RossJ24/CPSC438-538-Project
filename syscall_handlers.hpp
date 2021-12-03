@@ -27,3 +27,5 @@ std::shared_ptr<read_file_res_t> read_handler(TCPServer* server, std::shared_ptr
  * @return close_file_res_t* 
  */
 std::shared_ptr<close_file_res_t> close_handler(TCPServer* server, std::shared_ptr<close_file_req_t> req);
+
+std::shared_ptr<write_file_res_t> write_handler(TCPServer* server, std::shared_ptr<write_file_req_t> req);

@@ -136,6 +136,10 @@ void TCPServer::processRequests()
             std::shared_ptr<close_file_req_t> close_req = std::static_pointer_cast<close_file_req_t>(data);
             std::shared_ptr<close_file_res_t> close_res = close_handler(this, close_req);
             send(close_res, sizeof(*close_res), i);
+        } else if (operation == MT_WRITE) {
+            std::shared_ptr<write_file_req_t> write_req = std::static_pointer_cast<write_file_req_t>(data);
+            std::shared_ptr<write_file_res_t> write_res = write_handler(this, write_req);
+            send(write_res, sizeof(*write_res), i);
         }
     }
 }
@@ -192,4 +196,20 @@ int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_r
         ret = close(fd);
     }
     return ret;
+}
+
+int TCPServer::write_file(int fd, uint32_t sender_id, char* buf, int num_bytes){
+    std::shared_ptr<file> f = file_map[fd];
+    off_t seek_pos = lseek(fd, f->seek_positions[sender_id], SEEK_SET);
+    if (seek_pos == -1)
+    {
+        return -1;
+    }
+    ssize_t bytes_written = ::write(fd, buf, num_bytes);
+    if (bytes_written == -1)
+    {
+        return -1;
+    }
+    f->seek_positions[sender_id] += bytes_written;
+    return bytes_written;
 }
