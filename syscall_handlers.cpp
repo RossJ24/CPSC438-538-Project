@@ -20,7 +20,7 @@ std::shared_ptr<read_file_res_t> read_handler(TCPServer* server, std::shared_ptr
     if(!server->file_open(req->fd)){
         res->bytes_read = -1;
     }
-    res->bytes_read = server->read_file(req->fd,req->header.sender_id, res->read_buf,req->num_bytes);
+    res->bytes_read = server->read_file(req->fd,req->header.sender_id, res, req->num_bytes);
     return std::static_pointer_cast<read_file_res_t>(res);
 }
 

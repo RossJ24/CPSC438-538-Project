@@ -166,7 +166,7 @@ int TCPServer::open_existing_file(std::string file_path, uint32_t sender_id)
     return fd;
 }
 
-int TCPServer::read_file(int fd, uint32_t sender_id, char *buf, int num_bytes)
+int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_res_t> res, int num_bytes)
 {
     std::shared_ptr<file> f = file_map[fd];
     off_t seek_pos = lseek(fd, f->seek_positions[sender_id], SEEK_SET);
@@ -175,7 +175,7 @@ int TCPServer::read_file(int fd, uint32_t sender_id, char *buf, int num_bytes)
         return -1;
     }
 
-    ssize_t bytes_read = ::read(fd, buf, num_bytes);
+    ssize_t bytes_read = ::read(fd, res->read_buf, num_bytes);
     if (bytes_read == -1)
     {
         return -1;

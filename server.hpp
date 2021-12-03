@@ -62,7 +62,7 @@ public:
 
     int open_existing_file(std::string file_path, uint32_t sender_id);
 
-    int read_file(int fd, uint32_t sender_id, char* buf, int num_bytes);
+    int read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_res_t> res, int num_bytes);
 
     int close_file(int fd, uint32_t sender_id);
 };
