@@ -176,7 +176,7 @@ int TCPServer::open_existing_file(std::string file_path, uint32_t sender_id)
 int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_res_t> res, int num_bytes)
 {
     std::shared_ptr<file> f = file_map[fd];
-    off_t seek_pos = lseek(fd, f->seek_positions[sender_id], SEEK_SET);
+    off_t seek_pos = lseek(fd, )off_t) f->seek_positions[sender_id], SEEK_SET);
     printf("NUM BYTES: %d\n", num_bytes);
     printf("SEEK POS %d\n", f->seek_positions[sender_id]);
     if (seek_pos == (off_t)-1)
