@@ -11,7 +11,7 @@ std::shared_ptr<open_file_res_t> open_handler(TCPServer* server, std::shared_ptr
     }
     std::shared_ptr<open_file_res_t> res = std::make_shared<open_file_res_t>();
     res->file_descriptor = fd;
-    return res;
+    return std::static_pointer_cast<open_file_res_t>(res);
 }
 
 std::shared_ptr<read_file_res_t> read_handler(TCPServer* server, std::shared_ptr<read_file_req_t> req){
@@ -21,7 +21,7 @@ std::shared_ptr<read_file_res_t> read_handler(TCPServer* server, std::shared_ptr
         res->bytes_read = -1;
     }
     res->bytes_read = server->read_file(req->fd,req->header.sender_id, res->read_buf,req->num_bytes);
-    return res;
+    return std::static_pointer_cast<read_file_res_t>(res);
 }
 
 std::shared_ptr<close_file_res_t> close_handler(TCPServer* server, std::shared_ptr<close_file_req_t> req){
@@ -29,5 +29,5 @@ std::shared_ptr<close_file_res_t> close_handler(TCPServer* server, std::shared_p
     std::cout << "Server: " << req->header.sender_id << "closing fd: " << req->fd << std::endl;
     //Add logic to check;
     res->closed = server->close_file(req->fd, req->header.sender_id);
-    return res;
+    return std::static_pointer_cast<close_file_res_t>(res);
 }
