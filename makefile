@@ -1,6 +1,6 @@
 
 CC = g++
-FLAGS= -g3 -static
+FLAGS= -g3
 Server: controller_node.c server.o syscall_handlers.o
 	${CC} ${FLAGS} -o Server server.o syscall_handlers.o controller_node.c 
 
