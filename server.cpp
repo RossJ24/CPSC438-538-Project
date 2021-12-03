@@ -174,7 +174,7 @@ int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_r
     {
         return -1;
     }
-    std::cerr << "THIS IS THE COMPLAINT: " << res.get()->read_buf << std::endl;
+    printf("THIS IS THE COMPLAINT: %p\n", res.get()->read_buf);
     ssize_t bytes_read = ::read(fd, res.get()->read_buf, num_bytes);
     if (bytes_read == -1)
     {
