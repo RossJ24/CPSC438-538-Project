@@ -177,16 +177,17 @@ int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_r
 {
     std::shared_ptr<file> f = file_map[fd];
     off_t seek_pos = lseek(fd, f->seek_positions[sender_id], SEEK_SET);
+    printf("NUM BYTES: %d\n", num_bytes);
+    printf("SEEK POS %d\n", f->seek_positions[sender_id]);
     if (seek_pos == -1)
     {
-        printf("FD: %d, ERRNO: %d\n", fd, errno);
+        printf("Seek Err; FD: %d, ERRNO: %d\n", fd, errno);
         return -1;
     }
-    printf("THIS IS THE COMPLAINT: %p\n", res.get()->read_buf);
     ssize_t bytes_read = ::read(fd, res.get()->read_buf, num_bytes);
-    printf("FD: %d, ERRNO: %d\n", fd, errno);
     if (bytes_read == -1)
     {
+        printf("READ Err; FD: %d, ERRNO: %d\n", fd, errno);
         return -1;
     }
     f->seek_positions[sender_id] += bytes_read;
