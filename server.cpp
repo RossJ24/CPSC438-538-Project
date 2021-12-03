@@ -23,6 +23,7 @@ void TCPServer::createFd()
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
+    std::cout << "Server FD: " << server_fd << std::endl;
     // Makes the server non-blocking
     fcntl(server_fd, F_SETFL, fcntl(server_fd, F_GETFL, 0) | O_NONBLOCK);
 }
