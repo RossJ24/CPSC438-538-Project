@@ -194,6 +194,15 @@ int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_r
     file_map[fd]->seek_positions.erase(sender_id);
     if(--file_map[fd]->usage == 0){
         file_map.erase(fd);
+        std::unordered_map<std::string, int>::iterator it = file_descriptor_map.begin();
+        while(it != file_descriptor_map.end())
+        {
+            if(it->second == fd){
+                file_descriptor_map.erase(it);
+                break;
+            }
+            it++;
+        }
         ret = close(fd);
     }
     return ret;
