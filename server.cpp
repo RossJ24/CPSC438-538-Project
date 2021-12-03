@@ -213,7 +213,7 @@ int TCPServer::write_file(int fd, uint32_t sender_id, char* buf, int num_bytes){
     printf("SEEK POS %d\n", f->seek_positions[sender_id]);
     if (bytes_written == -1)
     {
-        printf("ERRNO: %d\n", errno);
+        printf("FD: %d, ERRNO: %d\n", fd, errno);
         std::cout << "YO!2" <<std::endl;
         return -1;
     }
