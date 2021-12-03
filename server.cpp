@@ -203,11 +203,14 @@ int TCPServer::write_file(int fd, uint32_t sender_id, char* buf, int num_bytes){
     off_t seek_pos = lseek(fd, f->seek_positions[sender_id], SEEK_SET);
     if (seek_pos == -1)
     {
+        std::cout << "YO!" <<std::endl;
         return -1;
     }
     ssize_t bytes_written = ::write(fd, buf, num_bytes);
+    printf("BUF CONTENT: %s\n", buf);
     if (bytes_written == -1)
     {
+        std::cout << "YO!2" <<std::endl;
         return -1;
     }
     f->seek_positions[sender_id] += bytes_written;

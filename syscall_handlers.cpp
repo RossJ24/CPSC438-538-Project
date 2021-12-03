@@ -34,8 +34,8 @@ std::shared_ptr<close_file_res_t> close_handler(TCPServer* server, std::shared_p
 
 std::shared_ptr<write_file_res_t> write_handler(TCPServer* server, std::shared_ptr<write_file_req_t> req){
     std::shared_ptr<write_file_res_t> res = std::make_shared<write_file_res_t>();
-    std::cout << "Server: " << req->header.sender_id << "writing to fd: " << req->fd << std::endl;
+    std::cout << "Server: " << req->header.sender_id << " writing to fd: " << req->fd << std::endl;
     //Add logic to check
-    res->bytes_written = server->write_file(req->fd,req->header.sender_id, req->write_buf, req->num_chars);
+    res->bytes_written = server->write_file(req->fd, req->header.sender_id, req->write_buf, req->num_chars);
     return res;
 }
