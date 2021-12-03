@@ -125,7 +125,7 @@ void TCPServer::processRequests()
     {
         std::shared_ptr<void> data = read(i);
         std::shared_ptr<mem_header> header = std::static_pointer_cast<mem_header>(data);
-        std::cout << header->opcode << std::endl;
+        std::cout << "Operation Requested" << header->opcode << std::endl;
         uint32_t operation = header->opcode;
         if (operation == MT_OPEN) {
             std::shared_ptr<open_file_req_t> open_req = std::static_pointer_cast<open_file_req_t>(data);
