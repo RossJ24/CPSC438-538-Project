@@ -83,6 +83,7 @@ void TCPServer::acceptConnection()
         connections.push_back(new_socket);
         active_connections++;
         total_connections++;
+        printvec(connections);
     }
 }
 
