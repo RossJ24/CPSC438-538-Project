@@ -130,19 +130,19 @@ void TCPServer::processRequests()
         if (operation == MT_OPEN) {
             std::shared_ptr<open_file_req_t> open_req = std::static_pointer_cast<open_file_req_t>(data);
             std::shared_ptr<open_file_res_t> open_res = open_handler(this, open_req);
-            send(open_res, sizeof(*open_res), i);
+            send(open_res, sizeof(open_file_res_t), i);
         } else if (operation == MT_READ) {
             std::shared_ptr<read_file_req_t> read_req = std::static_pointer_cast<read_file_req_t>(data);
             std::shared_ptr<read_file_res_t> read_res = read_handler(this, read_req);
-            send(read_res, sizeof(*read_res), i);
+            send(read_res, sizeof(read_file_res_t), i);
         } else if (operation == MT_CLOSE) {
             std::shared_ptr<close_file_req_t> close_req = std::static_pointer_cast<close_file_req_t>(data);
             std::shared_ptr<close_file_res_t> close_res = close_handler(this, close_req);
-            send(close_res, sizeof(*close_res), i);
+            send(close_res, sizeof(close_file_res_t), i);
         } else if (operation == MT_WRITE) {
             std::shared_ptr<write_file_req_t> write_req = std::static_pointer_cast<write_file_req_t>(data);
             std::shared_ptr<write_file_res_t> write_res = write_handler(this, write_req);
-            send(write_res, sizeof(*write_res), i);
+            send(write_res, sizeof(write_file_res_t), i);
         }
     }
 }
@@ -192,7 +192,7 @@ int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_r
         return -1;
     }
     printf("READ: %s\n", res->read_buf);
-    printf("BYTES READ: %ld; as int: %d", bytes_read, (int)bytes_read);
+    printf("BYTES READ: %ld; as int: %d\n", bytes_read, (int)bytes_read);
     f->seek_positions[sender_id] += bytes_read;
     return (int)bytes_read;
 }
