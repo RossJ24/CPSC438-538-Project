@@ -98,7 +98,9 @@ std::shared_ptr<void> TCPServer::read(int connection)
 
 void TCPServer::send(std::shared_ptr<void> payload, size_t sz, int connection)
 {
-    ::send(connections[connection], payload.get(), sz, 0);
+    int bytes_sent = ::send(connections[connection], payload.get(), sz, 0);
+    printf(bytes_sent == sz ? "GOOD\n" : "BAD\n");
+    printf("BYTES SENT: %d\n", bytes_sent);
 }
 
 /**
