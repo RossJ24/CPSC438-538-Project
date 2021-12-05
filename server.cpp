@@ -134,6 +134,7 @@ void TCPServer::processRequests()
         } else if (operation == MT_READ) {
             std::shared_ptr<read_file_req_t> read_req = std::static_pointer_cast<read_file_req_t>(data);
             std::shared_ptr<read_file_res_t> read_res = read_handler(this, read_req);
+            printf("NUM BYTES AGAIN AGAIN: %d\n", read_res->bytes_read);
             send(read_res, sizeof(read_file_res_t), i);
         } else if (operation == MT_CLOSE) {
             std::shared_ptr<close_file_req_t> close_req = std::static_pointer_cast<close_file_req_t>(data);
