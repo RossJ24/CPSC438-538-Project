@@ -191,6 +191,7 @@ int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_r
         printf("READ Err; FD: %d, ERRNO: %d\n", fd, errno);
         return -1;
     }
+    printf("READ: %s\n", res->read_buf);
     f->seek_positions[sender_id] += bytes_read;
     return bytes_read;
 }
