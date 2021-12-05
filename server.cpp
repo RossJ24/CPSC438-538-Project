@@ -192,8 +192,9 @@ int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_r
         return -1;
     }
     printf("READ: %s\n", res->read_buf);
+    printf("BYTES READ: %ld; as int: %d", bytes_read, (int)bytes_read);
     f->seek_positions[sender_id] += bytes_read;
-    return bytes_read;
+    return (int)bytes_read;
 }
 
  int TCPServer::close_file(int fd, uint32_t sender_id){
