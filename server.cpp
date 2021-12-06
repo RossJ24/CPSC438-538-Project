@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include "types.h"
 #include <errno.h>
+#include <sstream>
 
 void TCPServer::createFd()
 {
@@ -93,21 +94,17 @@ std::shared_ptr<void> TCPServer::read(int connection)
     std::shared_ptr<char[]> buf(new char[5120]);
     memset(buf.get(), 0, 5120);
     int bytesread = ::read(connections[connection], buf.get(), 5120);
-    std::cout << "----------------start--------------" <<std::endl;
+    std::cout << "--------------start---------------" <<std::endl;
     return std::static_pointer_cast<void>(buf);
 }
 
 void TCPServer::send(std::shared_ptr<void> payload, size_t sz, int connection)
 {
     int bytes_sent = ::send(connections[connection], payload.get(), sz, 0);
-    printf(bytes_sent == sz ? "GOOD\n" : "BAD\n");
-    std::cout << "------------------end---------------" <<std::endl;
+    printf(bytes_sent == sz ? "Correct number of bytes sent\n" : "Incorrect number of bytes sent.\n");
+    std::cout << "---------------end----------------" <<std::endl;
 }
 
-/**
-     * Reads from all sockets and returns a vector of void pointers to the data.
-     * 
-     */
 std::vector<std::shared_ptr<void>> TCPServer::readAll()
 {
     std::vector<std::shared_ptr<void>> vec = std::vector<std::shared_ptr<void>>(0);
@@ -118,17 +115,41 @@ std::vector<std::shared_ptr<void>> TCPServer::readAll()
     return vec;
 }
 
-/**
-     * Processes all requests based on the values in the header.
-     * 
-     */
+std::string TCPServer::mapOpcodeToOperation(uint32_t opcode){
+    std::stringstream sstm;
+
+    switch(opcode){
+        case MT_OPEN:
+            sstm << "Open(" << opcode << ")";
+            return sstm.str();
+            break;
+        case MT_CLOSE:
+            sstm << "Close(" << opcode << ")";
+            return sstm.str();
+            break;
+        case MT_READ:
+            sstm << "Read(" << opcode << ")";
+            return sstm.str();
+            break;
+        case MT_WRITE:
+            sstm << "Write(" << opcode << ")";
+            return sstm.str();
+            break;
+        default:
+            sstm << "Unknown(" << opcode << ")";
+            return sstm.str();
+            break;
+    }
+    
+}
+
 void TCPServer::processRequests()
 {
     for (int i = 0; i < this->connections.size(); ++i)
     {
         std::shared_ptr<void> data = read(i);
         std::shared_ptr<mem_header> header = std::static_pointer_cast<mem_header>(data);
-        std::cout << "Operation Requested " << header->opcode << std::endl;
+        std::cout << "Operation Requested " << mapOpcodeToOperation(header->opcode) << std::endl;
         uint32_t operation = header->opcode;
         if (operation == MT_OPEN) {
             std::shared_ptr<open_file_req_t> open_req = std::static_pointer_cast<open_file_req_t>(data);
@@ -137,7 +158,6 @@ void TCPServer::processRequests()
         } else if (operation == MT_READ) {
             std::shared_ptr<read_file_req_t> read_req = std::static_pointer_cast<read_file_req_t>(data);
             std::shared_ptr<read_file_res_t> read_res = read_handler(this, read_req);
-            printf("NUM BYTES AGAIN AGAIN: %d\n", read_res->bytes_read);
             send(read_res, sizeof(read_file_res_t), i);
         } else if (operation == MT_CLOSE) {
             std::shared_ptr<close_file_req_t> close_req = std::static_pointer_cast<close_file_req_t>(data);
@@ -187,18 +207,18 @@ int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_r
     printf("SEEK POS %d\n", f->seek_positions[sender_id]);
     if (seek_pos == (off_t)-1)
     {
-        printf("Seek Err; FD: %d, ERRNO: %d\n", fd, errno);
+        printf("Seek Err! FD: %d, ERRNO: %d\n", fd, errno);
         return -1;
     }
     std::cout << "CURR POS: " << lseek(fd, 0, SEEK_CUR) <<  std::endl;
     ssize_t bytes_read = ::read(fd, res.get()->read_buf, num_bytes);
     if (bytes_read == -1)
     {
-        printf("READ Err; FD: %d, ERRNO: %d\n", fd, errno);
+        printf("READ Err! FD: %d, ERRNO: %d\n", fd, errno);
         return -1;
     }
     printf("READ: %s\n", res->read_buf);
-    printf("BYTES READ: %ld; as int: %d\n", bytes_read, (int)bytes_read);
+    printf("BYTES READ: %d", (int)bytes_read);
     f->seek_positions[sender_id] += bytes_read;
     return (int)bytes_read;
 }
@@ -222,23 +242,23 @@ int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_r
     return ret;
 }
 
-int TCPServer::write_file(int fd, uint32_t sender_id, char* buf, int num_bytes){
+int TCPServer::write_file(int fd, uint32_t sender_id, std::shared_ptr<write_file_req_t> req, int num_bytes){
     std::shared_ptr<file> f = file_map[fd];
     off_t seek_pos = lseek(fd, f->seek_positions[sender_id], SEEK_SET);
     printf("SEEK POS %d\n", f->seek_positions[sender_id]);
     if (seek_pos == -1)
     {
-        std::cout << "YO!" <<std::endl;
+        printf("Seek error! FD: %d, ERRNO: %d\n", fd, errno);
         return -1;
     }
     std::cout << "CURR POS: " << lseek(fd, 0, SEEK_CUR) <<  std::endl;
-    ssize_t bytes_written = ::write(fd, buf, num_bytes);
-    printf("BUF CONTENT: %s\n", buf);
+    ssize_t bytes_written = ::write(fd, req->write_buf, num_bytes);
+    printf("BUF CONTENT: %s\n", req->write_buf);
     printf("NUM BYTES: %d\n", num_bytes);
+    printf("BYTES WRITTEN: %ld\n", bytes_written);
     if (bytes_written == -1)
     {
-        printf("FD: %d, ERRNO: %d\n", fd, errno);
-        std::cout << "YO!2" <<std::endl;
+        printf("Write error! FD: %d, ERRNO: %d\n", fd, errno);
         return -1;
     }
     f->seek_positions[sender_id] += bytes_written;

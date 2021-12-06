@@ -5,15 +5,16 @@ std::shared_ptr<open_file_res_t> open_handler(TCPServer* server, std::shared_ptr
     int fd;
     std::cout << "Server: " << req->header.sender_id << " opening file: " << path << std::endl;
     if(server->file_exists(path)){
-        std::cout << "AAYOO" << std::endl;
+        std::cout << "File already exists." << std::endl;
         fd = server->open_existing_file(path, req->header.sender_id);
     } else {
+        std::cout << "Opening new file" << std::endl;
         fd = open(req->path, req->flags);
         server->add_file(path, fd);
     }
     std::shared_ptr<open_file_res_t> res = std::make_shared<open_file_res_t>();
     res->file_descriptor = fd;
-    std::cout << "granted fd: " << fd << std::endl;
+    std::cout << "Open granted fd: " << fd << std::endl;
     return std::static_pointer_cast<open_file_res_t>(res);
 }
 
@@ -40,6 +41,6 @@ std::shared_ptr<write_file_res_t> write_handler(TCPServer* server, std::shared_p
     std::shared_ptr<write_file_res_t> res = std::make_shared<write_file_res_t>();
     std::cout << "Server: " << req->header.sender_id << " writing to fd: " << req->fd << std::endl;
     //Add logic to check
-    res->bytes_written = server->write_file(req->fd, req->header.sender_id, req->write_buf, req->num_chars);
+    res->bytes_written = server->write_file(req->fd, req->header.sender_id, req, req->num_chars);
     return res;
 }
