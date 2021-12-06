@@ -93,6 +93,7 @@ std::shared_ptr<void> TCPServer::read(int connection)
     std::shared_ptr<char[]> buf(new char[5120]);
     memset(buf.get(), 0, 5120);
     int bytesread = ::read(connections[connection], buf.get(), 5120);
+    std::cout << "----------------start--------------" <<std::endl;
     return std::static_pointer_cast<void>(buf);
 }
 
@@ -100,7 +101,7 @@ void TCPServer::send(std::shared_ptr<void> payload, size_t sz, int connection)
 {
     int bytes_sent = ::send(connections[connection], payload.get(), sz, 0);
     printf(bytes_sent == sz ? "GOOD\n" : "BAD\n");
-    printf("BYTES SENT: %d\n", bytes_sent);
+    std::cout << "------------------end---------------" <<std::endl;
 }
 
 /**
@@ -222,15 +223,16 @@ int TCPServer::read_file(int fd, uint32_t sender_id, std::shared_ptr<read_file_r
 int TCPServer::write_file(int fd, uint32_t sender_id, char* buf, int num_bytes){
     std::shared_ptr<file> f = file_map[fd];
     off_t seek_pos = lseek(fd, f->seek_positions[sender_id], SEEK_SET);
+    printf("SEEK POS %d\n", f->seek_positions[sender_id]);
     if (seek_pos == -1)
     {
         std::cout << "YO!" <<std::endl;
         return -1;
     }
+    std::cout << "CURR POS: " << lseek(fd, 0, SEEK_CUR) <<  std::endl;
     ssize_t bytes_written = ::write(fd, buf, num_bytes);
     printf("BUF CONTENT: %s\n", buf);
     printf("NUM BYTES: %d\n", num_bytes);
-    printf("SEEK POS %d\n", f->seek_positions[sender_id]);
     if (bytes_written == -1)
     {
         printf("FD: %d, ERRNO: %d\n", fd, errno);
