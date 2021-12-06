@@ -172,8 +172,10 @@ void TCPServer::add_file(std::string file_path, int fd)
 int TCPServer::open_existing_file(std::string file_path, uint32_t sender_id)
 {
     int fd = file_descriptor_map[file_path];
-    file_map[fd]->seek_positions[sender_id] = 0;
-    file_map[fd]->usage++;
+    if(!file_map[fd]->seek_positions.count(sender_id)){
+        file_map[fd]->seek_positions[sender_id] = 0;
+        file_map[fd]->usage++;
+    }
     return fd;
 }
 
