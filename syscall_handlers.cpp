@@ -5,6 +5,7 @@ std::shared_ptr<open_file_res_t> open_handler(TCPServer* server, std::shared_ptr
     int fd;
     std::cout << "Server: " << req->header.sender_id << " opening file: " << path << std::endl;
     if(server->file_exists(path)){
+        std::cout << "AAYOO" << std::endl;
         fd = server->open_existing_file(path, req->header.sender_id);
     } else {
         fd = open(req->path, req->flags);
