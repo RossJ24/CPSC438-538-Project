@@ -31,14 +31,14 @@ typedef struct {
 } read_file_req_t;
 
 typedef struct {
-    char read_buf[4096];
+    char read_buf[256];
     int bytes_read;
 } read_file_res_t;
 
 typedef struct {
     mem_header header;
     int fd;
-    char write_buf[4096];
+    char write_buf[256];
     size_t num_chars;
 } write_file_req_t;
 
