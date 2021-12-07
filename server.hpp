@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <vector>
+#include <queue>
 #include <iostream>
 #include <unordered_map>
 #include <string>
@@ -33,7 +34,8 @@ class TCPServer
     std::unordered_map<std::string, int> file_descriptor_map;
     // Map that maps File descriptor -> file struct with metadata for each compute ndoe
     std::unordered_map<int, std::shared_ptr<file>> file_map;
-
+    //Queue that stores the IDs of nodes that are waiting for a resource
+    std::queue<int> wait_queue;
 private:
     /**
      * @brief Create a Fd object

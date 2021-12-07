@@ -135,6 +135,18 @@ std::string TCPServer::mapOpcodeToOperation(uint32_t opcode){
             sstm << "Write(" << opcode << ")";
             return sstm.str();
             break;
+	case MT_ENQUEUE:
+	    sstm << "Enqueue(" << opcode << ")";
+	    return sstm.str();
+	    break;
+	case MT_DEQUEUE:
+            sstm << "Dequeue(" << opcode << ")";
+            return sstm.str();
+            break;
+	case MT_POLL:
+            sstm << "Poll(" << opcode << ")";
+            return sstm.str();
+            break;
         default:
             sstm << "Unknown(" << opcode << ")";
             return sstm.str();
@@ -167,7 +179,22 @@ void TCPServer::processRequests()
             std::shared_ptr<write_file_req_t> write_req = std::static_pointer_cast<write_file_req_t>(data);
             std::shared_ptr<write_file_res_t> write_res = write_handler(this, write_req);
             send(write_res, sizeof(write_file_res_t), i);
-        }
+        } else if (operation == MT_ENQUEUE) {
+	    wait_queue.push(i);
+	    int * wait = new int;
+	    *wait = 1;
+	    send(std::shared_ptr<int>(wait), sizeof(int), i);
+	} else if (operation == MT_DEQUEUE) {
+	    int woke_process = wait_queue.front();
+	    wait_queue.pop();
+	    int * wake = new int;
+	    *wake = 0;
+	    send(std::shared_ptr<int>(wake), sizeof(int), woke_process);
+	} else if (operation == MT_POLL) {
+	    int * wait = new int;
+	    *wait = 1;
+	    send(std::shared_ptr<int>(wait), sizeof(int), i);
+	}
     }
 }
 

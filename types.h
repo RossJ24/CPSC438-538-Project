@@ -7,6 +7,9 @@
 #define MT_CLOSE 2
 #define MT_READ 3
 #define MT_WRITE 4
+#define MT_ENQUEUE 5
+#define MT_DEQUEUE 6
+#define MT_POLL 7
 
 typedef struct {
 	u_int32_t opcode;         // type of payload / message
